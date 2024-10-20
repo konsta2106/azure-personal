@@ -1,0 +1,30 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy infrastructure
+      run: |
+        az group create --name ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }}
+        az deployment group create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --template-file infra/azureResourcesTemplate.json --parameters storageAccountName=${{ secrets.STORAGE_ACCOUNT_NAME }} cosmosDbAccountName=${{ secrets.COSMOS_DB_ACCOUNT_NAME }} appServicePlanName=${{ secrets.APP_SERVICE_PLAN_NAME }} functionAppName=${{ secrets.FUNCTION_APP_NAME }}
+
+    # - name: Deploy Function App
+    #   run: |
+    #     cd functionapp
+    #     npm install
+    #     func azure functionapp publish ${{ secrets.FUNCTION_APP_NAME }}

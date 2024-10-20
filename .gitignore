@@ -1,0 +1,5 @@
+# VSCode
+/.vscode
+
+# Env variables
+.env
