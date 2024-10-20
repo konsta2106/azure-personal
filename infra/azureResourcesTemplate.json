@@ -65,10 +65,27 @@
             },
             {
               "name": "WEBSITE_NODE_DEFAULT_VERSION",
-              "value": "~14"
+              "value": "~20"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('microsoft.insights/components', parameters('appInsightsName')), '2020-02-02').InstrumentationKey]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "node"
             }
           ]
         }
+      }
+    },
+    {
+      "type": "microsoft.insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[parameters('appInsightsName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "Application_Type": "web"
       }
     }
   ],
@@ -83,6 +100,9 @@
       "type": "string"
     },
     "functionAppName": {
+      "type": "string"
+    },
+    "appInsightsName": {
       "type": "string"
     }
   }

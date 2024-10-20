@@ -1,5 +1,18 @@
 # VSCode
 /.vscode
+/*/.vscode
 
 # Env variables
 .env
+
+
+.git/
+.gitignore
+/*/.gitignore
+local.settings.json
+test/
+README.md
+__azurite*
+/*/__azurite*
+/__blobstorage__/
+/__queuestorage__/
