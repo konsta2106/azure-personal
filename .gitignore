@@ -16,3 +16,4 @@ __azurite*
 /*/__azurite*
 /__blobstorage__/
 /__queuestorage__/
+.DS_Store

@@ -31,6 +31,38 @@
       }
     },
     {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "apiVersion": "2021-04-15",
+      "name": "[concat(parameters('cosmosDbAccountName'), '/', parameters('databaseName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbAccountName'))]"
+      ],
+      "properties": {
+        "resource": {
+          "id": "[parameters('databaseName')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2021-04-15",
+      "name": "[concat(parameters('cosmosDbAccountName'), '/', parameters('databaseName'), '/', parameters('fuelContainerName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('cosmosDbAccountName'), parameters('databaseName'))]"
+      ],
+      "properties": {
+        "resource": {
+          "id": "[parameters('fuelContainerName')]",
+          "partitionKey": {
+            "paths": [
+              "/date"
+            ],
+            "kind": "Hash"
+          }
+        }
+      }
+    },
+    {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2021-02-01",
       "name": "[parameters('appServicePlanName')]",
@@ -74,10 +106,17 @@
             {
               "name": "FUNCTIONS_WORKER_RUNTIME",
               "value": "node"
+            },
+            {
+              "name": "MyAccount_COSMOSDB",
+                "value": "[concat('AccountEndpoint=https://', parameters('cosmosDbAccountName'), '.documents.azure.com:443/;AccountKey=', listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbAccountName')), '2021-04-15').primaryMasterKey)]"
             }
           ]
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbAccountName'))]"
+      ]
     },
     {
       "type": "microsoft.insights/components",
@@ -103,6 +142,12 @@
       "type": "string"
     },
     "appInsightsName": {
+      "type": "string"
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "fuelContainerName": {
       "type": "string"
     }
   }
