@@ -1,9 +1,16 @@
-const { app } = require('@azure/functions');
+const { app, output } = require('@azure/functions');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+const cosmosOutput = output.cosmosDB({
+    databaseName: process.env["DATABASE_NAME"],
+    containerName: process.env["FUEL_CONTAINER_NAME"],
+    connection: 'MyAccount_COSMOSDB',
+});
+
 app.timer('timerTriggerGetFuelPricesToDb', {
-    schedule: '0 0 7 * * *',  // Runs every day at 7 AM UTC
+    schedule: '0 0 17 * * *',  // Runs every day at 7 AM UTC
+    return: cosmosOutput,
     handler: async (myTimer, context) => {
         context.log('Timer function executed at: ', new Date().toISOString());
 
@@ -32,11 +39,19 @@ app.timer('timerTriggerGetFuelPricesToDb', {
             });
             
             // Logging the scraped data (you can also insert this into a database)
-            context.log('Stations: ', fuel95Stations);
-            context.log('Keskiarvo (average price): ', keskiarvo);
-            
-            // Optionally, add your database integration code here to save data
-            // e.g., insert fuel95Stations and keskiarvo into a database
+            // context.log('Stations: ', fuel95Stations);
+            // context.log('Keskiarvo (average price): ', keskiarvo);
+
+            let dataToReturn = {
+                id: Date.now().toString(),
+                keskiarvo,
+                stations: fuel95Stations,
+                timestamp: new Date().toISOString()
+            }
+            context.log('Data to return:', dataToReturn);
+
+            // Return data to be inserted into Cosmos DB
+            return dataToReturn;
 
         } catch (error) {
             context.log('Error fetching data:', error);

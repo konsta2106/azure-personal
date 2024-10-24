@@ -55,7 +55,7 @@
           "id": "[parameters('fuelContainerName')]",
           "partitionKey": {
             "paths": [
-              "/date"
+              "/timestamp"
             ],
             "kind": "Hash"
           }
@@ -110,6 +110,14 @@
             {
               "name": "MyAccount_COSMOSDB",
                 "value": "[concat('AccountEndpoint=https://', parameters('cosmosDbAccountName'), '.documents.azure.com:443/;AccountKey=', listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('cosmosDbAccountName')), '2021-04-15').primaryMasterKey)]"
+            },
+            {
+              "name": "DATABASE_NAME",
+              "value": "[parameters('databaseName')]"
+            },
+            {
+              "name": "FUEL_CONTAINER_NAME",
+              "value": "[parameters('fuelContainerName')]"
             }
           ]
         }
