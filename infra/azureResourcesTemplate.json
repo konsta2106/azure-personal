@@ -27,6 +27,11 @@
           {
             "locationName": "[resourceGroup().location]"
           }
+        ],
+        "capabilities": [
+          {
+            "name": "EnableServerless"
+          }
         ]
       }
     },
