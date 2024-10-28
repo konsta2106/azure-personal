@@ -27,7 +27,7 @@ app.http('httpTriggerGetFuelPrices', {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(cleanedData)
+            jsonBody: cleanedData
         };
     }
 });
