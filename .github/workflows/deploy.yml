@@ -30,7 +30,7 @@ jobs:
     - name: Deploy infrastructure
       run: |
         az group create --name ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }}
-        az deployment group create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --template-file infra/azureResourcesTemplate.json --parameters storageAccountName=${{ secrets.STORAGE_ACCOUNT_NAME }} cosmosDbAccountName=${{ secrets.COSMOS_DB_ACCOUNT_NAME }} appServicePlanName=${{ secrets.APP_SERVICE_PLAN_NAME }} functionAppName=${{ secrets.FUNCTION_APP_NAME }} appInsightsName=${{ secrets.APP_INSIGHTS_NAME }} databaseName=${{ secrets.DATABASE_NAME }} fuelContainerName=${{ secrets.FUEL_CONTAINER_NAME }}
+        az deployment group create --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --template-file infra/azureResourcesTemplate.json --parameters storageAccountName=${{ secrets.STORAGE_ACCOUNT_NAME }} cosmosDbAccountName=${{ secrets.COSMOS_DB_ACCOUNT_NAME }} appServicePlanName=${{ secrets.APP_SERVICE_PLAN_NAME }} functionAppName=${{ secrets.FUNCTION_APP_NAME }} appInsightsName=${{ secrets.APP_INSIGHTS_NAME }} databaseName=${{ secrets.DATABASE_NAME }} fuelContainerName=${{ secrets.FUEL_CONTAINER_NAME }} skillsContainerName=${{ secrets.SKILLS_CONTAINER_NAME }}
 
     - name: Install Azure Functions Core Tools
       run: |

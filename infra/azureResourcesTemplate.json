@@ -68,6 +68,25 @@
       }
     },
     {
+      "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "apiVersion": "2021-04-15",
+      "name": "[concat(parameters('cosmosDbAccountName'), '/', parameters('databaseName'), '/', parameters('fuelContainerName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('cosmosDbAccountName'), parameters('databaseName'))]"
+      ],
+      "properties": {
+        "resource": {
+          "id": "[parameters('skillsContainerName')]",
+          "partitionKey": {
+            "paths": [
+              "/skillName"
+            ],
+            "kind": "Hash"
+          }
+        }
+      }
+    },
+    {
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2021-02-01",
       "name": "[parameters('appServicePlanName')]",
@@ -166,6 +185,9 @@
       "type": "string"
     },
     "fuelContainerName": {
+      "type": "string"
+    },
+    "skillsContainerName": {
       "type": "string"
     }
   }
