@@ -13,8 +13,10 @@ local.settings.json
 test/
 README.md
 __azurite*
+*Azurite*
 /*/__azurite*
 /__blobstorage__/
 /__queuestorage__/
 .DS_Store
-/node_modules
+*node_modules/
+__**
