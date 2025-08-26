@@ -13,7 +13,6 @@ app.http('httpTriggerGetFuelPrices', {
         try {
             const startDate = request.query.get('start');
             const endDate = request.query.get('end');
-
             let querySpec;
 
             if (startDate && endDate) {
@@ -30,12 +29,11 @@ app.http('httpTriggerGetFuelPrices', {
 
             const { resources: fuelData } = await container.items.query(querySpec).fetchAll();
 
-            const cleanedData = fuelData.map(doc => {
-                const { _rid, _self, _etag, _attachments, _ts, ...cleanedDoc } = doc;
-                return cleanedDoc;
-            });
-
-            return { status: 200, jsonBody: cleanedData };
+            return { status: 200, jsonBody: fuelData.map(item => ({
+                id: item.id,
+                keskiarvo: item.keskiarvo,
+                timestamp: item.timestamp
+            })) };
 
         } catch (err) {
             context.log('Error fetching data:', err);
