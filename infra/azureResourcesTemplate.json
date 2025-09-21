@@ -318,14 +318,29 @@
       ]
     },
     {
+      "type": "Microsoft.ApiManagement/service/namedValues",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/function-key')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apimServiceName'))]",
+        "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+      ],
+      "properties": {
+        "displayName": "function-key",
+        "value": "[listkeys(concat(resourceId('Microsoft.Web/sites', parameters('functionAppName')), '/host/default/'),'2021-02-01').functionKeys.default]",
+        "secret": true
+      }
+    },
+    {
       "type": "Microsoft.ApiManagement/service/apis/policies",
       "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/policy')]",
       "dependsOn": [
-        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]",
+        "[resourceId('Microsoft.ApiManagement/service/namedValues', parameters('apimServiceName'), 'function-key')]"
       ],
       "properties": {
-        "value": "<policies><inbound><base /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method><method>PUT</method><method>DELETE</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
+        "value": "<policies><inbound><base /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method><method>PUT</method><method>DELETE</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors><set-header name=\"x-functions-key\" exists-action=\"override\"><value>{{function-key}}</value></set-header></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
         "format": "xml"
       }
     }
