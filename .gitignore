@@ -20,3 +20,4 @@ __azurite*
 .DS_Store
 *node_modules/
 __**
+*.http

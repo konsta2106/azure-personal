@@ -10,7 +10,8 @@
     "@azure/cosmos": "^4.5.0",
     "@azure/functions": "^4.0.0",
     "axios": "^1.7.7",
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "uuid": "^13.0.0"
   },
   "main": "src/{index.js,functions/*.js}"
 }

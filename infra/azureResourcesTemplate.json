@@ -70,16 +70,16 @@
     {
       "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
       "apiVersion": "2021-04-15",
-      "name": "[concat(parameters('cosmosDbAccountName'), '/', parameters('databaseName'), '/', parameters('skillsContainerName'))]",
+      "name": "[concat(parameters('cosmosDbAccountName'), '/', parameters('databaseName'), '/', parameters('cvContainerName'))]",
       "dependsOn": [
         "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('cosmosDbAccountName'), parameters('databaseName'))]"
       ],
       "properties": {
         "resource": {
-          "id": "[parameters('skillsContainerName')]",
+          "id": "[parameters('cvContainerName')]",
           "partitionKey": {
             "paths": [
-              "/skillName"
+              "/entityType"
             ],
             "kind": "Hash"
           }
@@ -147,6 +147,10 @@
             {
               "name": "FUEL_CONTAINER_NAME",
               "value": "[parameters('fuelContainerName')]"
+            },
+            {
+              "name": "CV_CONTAINER_NAME", 
+              "value": "[parameters('cvContainerName')]"
             }
           ]
         }
@@ -162,6 +166,167 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "Application_Type": "web"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "2021-08-01",
+      "name": "[parameters('apimServiceName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Developer",
+        "capacity": 1
+      },
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/products",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apimServiceName'))]"
+      ],
+      "properties": {
+        "displayName": "CV API",
+        "description": "Complete CV management API with versioning support",
+        "subscriptionRequired": true,
+        "approvalRequired": true,
+        "state": "published"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apimServiceName'))]",
+        "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+      ],
+      "properties": {
+        "displayName": "CV API v1",
+        "description": "CV management API with full CRUD operations for all CV entities",
+        "serviceUrl": "[concat('https://', parameters('functionAppName'), '.azurewebsites.net/api')]",
+        "path": "cv/v1",
+        "protocols": ["https"],
+        "subscriptionRequired": true
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-skills')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get All Skills",
+        "method": "GET",
+        "urlTemplate": "/skills",
+        "description": "Retrieve all skills"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-skill-by-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get Skill by ID",
+        "method": "GET",
+        "urlTemplate": "/skills/{skillId}",
+        "description": "Retrieve a specific skill by ID",
+        "templateParameters": [
+          {
+            "name": "skillId",
+            "description": "Skill identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/create-skill')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Create Skill",
+        "method": "POST",
+        "urlTemplate": "/skills",
+        "description": "Create a new skill"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-skill')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update Skill",
+        "method": "PUT",
+        "urlTemplate": "/skills/{skillId}",
+        "description": "Update an existing skill",
+        "templateParameters": [
+          {
+            "name": "skillId",
+            "description": "Skill identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv-v1/delete-skill')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv-v1')]"
+      ],
+      "properties": {
+        "displayName": "Delete Skill",
+        "method": "DELETE",
+        "urlTemplate": "/skills/{skillId}",
+        "description": "Delete a skill",
+        "templateParameters": [
+          {
+            "name": "skillId",
+            "description": "Skill identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/products/apis",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimServiceName'), 'cv')]",
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/policies",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/policy')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "value": "<policies><inbound><base /><check-header name=\"Ocp-Apim-Subscription-Key\" failed-check-httpcode=\"401\" failed-check-error-message=\"Subscription key required\" ignore-case=\"false\" /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method><method>PUT</method><method>DELETE</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
+        "format": "xml"
       }
     }
   ],
@@ -187,7 +352,17 @@
     "fuelContainerName": {
       "type": "string"
     },
-    "skillsContainerName": {
+    "cvContainerName": {
+      "type": "string",
+      "defaultValue": "cv-data"
+    },
+    "apimServiceName": {
+      "type": "string"
+    },
+    "publisherEmail": {
+      "type": "string"
+    },
+    "publisherName": {
       "type": "string"
     }
   }

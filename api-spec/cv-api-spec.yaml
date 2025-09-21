@@ -1,0 +1,1553 @@
+openapi: 3.0.3
+info:
+  title: Personal CV API
+  description: |
+    A comprehensive REST API for managing personal CV data including general information, 
+    skills, projects, work experience, education, certifications, and languages.
+    
+    This API is designed for integration specialists and supports full CRUD operations
+    on all CV entities with a dedicated endpoint for retrieving the complete CV.
+  version: 1.0.0
+  contact:
+    name: Konsta
+    email: konsta@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://your-apim-instance.azure-api.net/cv
+    description: Production server (via Azure API Management)
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  # Complete CV Endpoint
+  /cv:
+    get:
+      summary: Get complete CV
+      description: Retrieves the complete CV with all sections aggregated and formatted
+      operationId: getCompleteCV
+      tags:
+        - CV
+      responses:
+        '200':
+          description: Complete CV retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteCV'
+        '404':
+          description: CV data not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # General Information
+  /general-info:
+    get:
+      summary: Get general information
+      description: Retrieves the general/personal information section
+      operationId: getGeneralInfo
+      tags:
+        - General Info
+      responses:
+        '200':
+          description: General information retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/GeneralInfo'
+        '404':
+          description: General information not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      summary: Update general information
+      description: Creates or updates the general information section
+      operationId: updateGeneralInfo
+      tags:
+        - General Info
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GeneralInfoInput'
+      responses:
+        '200':
+          description: General information updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/GeneralInfo'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  # Skills
+  /skills:
+    get:
+      summary: Get all skills
+      description: Retrieves all skills with optional filtering by category
+      operationId: getSkills
+      tags:
+        - Skills
+      parameters:
+        - name: category
+          in: query
+          description: Filter skills by category
+          required: false
+          schema:
+            type: string
+        - name: highlighted
+          in: query
+          description: Filter by highlighted skills only
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Skills retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Skill'
+    
+    post:
+      summary: Create new skill
+      description: Creates a new skill entry
+      operationId: createSkill
+      tags:
+        - Skills
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillInput'
+      responses:
+        '201':
+          description: Skill created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Skill'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /skills/{skillId}:
+    parameters:
+      - name: skillId
+        in: path
+        required: true
+        description: Unique identifier for the skill
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      summary: Get specific skill
+      description: Retrieves a specific skill by ID
+      operationId: getSkill
+      tags:
+        - Skills
+      responses:
+        '200':
+          description: Skill retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Skill'
+        '404':
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    put:
+      summary: Update skill
+      description: Updates an existing skill
+      operationId: updateSkill
+      tags:
+        - Skills
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SkillInput'
+      responses:
+        '200':
+          description: Skill updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Skill'
+        '404':
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    
+    delete:
+      summary: Delete skill
+      description: Deletes a specific skill
+      operationId: deleteSkill
+      tags:
+        - Skills
+      responses:
+        '204':
+          description: Skill deleted successfully
+        '404':
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Projects
+  /projects:
+    get:
+      summary: Get all projects
+      description: Retrieves all projects with optional filtering
+      operationId: getProjects
+      tags:
+        - Projects
+      parameters:
+        - name: status
+          in: query
+          description: Filter projects by status
+          required: false
+          schema:
+            type: string
+            enum: [completed, ongoing, maintenance]
+        - name: highlighted
+          in: query
+          description: Filter by highlighted projects only
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Projects retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Project'
+    
+    post:
+      summary: Create new project
+      description: Creates a new project entry
+      operationId: createProject
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Project'
+
+  /projects/{projectId}:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        description: Unique identifier for the project
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      summary: Get specific project
+      description: Retrieves a specific project by ID
+      operationId: getProject
+      tags:
+        - Projects
+      responses:
+        '200':
+          description: Project retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Project'
+    
+    put:
+      summary: Update project
+      description: Updates an existing project
+      operationId: updateProject
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectInput'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Project'
+    
+    delete:
+      summary: Delete project
+      description: Deletes a specific project
+      operationId: deleteProject
+      tags:
+        - Projects
+      responses:
+        '204':
+          description: Project deleted successfully
+
+  # Work Experience
+  /experience:
+    get:
+      summary: Get all work experience
+      description: Retrieves all work experience entries
+      operationId: getExperience
+      tags:
+        - Experience
+      responses:
+        '200':
+          description: Experience retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Experience'
+    
+    post:
+      summary: Create new experience
+      description: Creates a new work experience entry
+      operationId: createExperience
+      tags:
+        - Experience
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceInput'
+      responses:
+        '201':
+          description: Experience created successfully
+
+  /experience/{experienceId}:
+    parameters:
+      - name: experienceId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      summary: Get specific experience
+      operationId: getExperienceById
+      tags:
+        - Experience
+      responses:
+        '200':
+          description: Experience retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Experience'
+    
+    put:
+      summary: Update experience
+      operationId: updateExperience
+      tags:
+        - Experience
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceInput'
+      responses:
+        '200':
+          description: Experience updated successfully
+    
+    delete:
+      summary: Delete experience
+      operationId: deleteExperience
+      tags:
+        - Experience
+      responses:
+        '204':
+          description: Experience deleted successfully
+
+  # Education
+  /education:
+    get:
+      summary: Get all education
+      operationId: getEducation
+      tags:
+        - Education
+      responses:
+        '200':
+          description: Education retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Education'
+    
+    post:
+      summary: Create new education
+      operationId: createEducation
+      tags:
+        - Education
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationInput'
+      responses:
+        '201':
+          description: Education created successfully
+
+  /education/{educationId}:
+    parameters:
+      - name: educationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      summary: Get specific education
+      operationId: getEducationById
+      tags:
+        - Education
+      responses:
+        '200':
+          description: Education retrieved successfully
+    
+    put:
+      summary: Update education
+      operationId: updateEducation
+      tags:
+        - Education
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EducationInput'
+      responses:
+        '200':
+          description: Education updated successfully
+    
+    delete:
+      summary: Delete education
+      operationId: deleteEducation
+      tags:
+        - Education
+      responses:
+        '204':
+          description: Education deleted successfully
+
+  # Certifications
+  /certifications:
+    get:
+      summary: Get all certifications
+      operationId: getCertifications
+      tags:
+        - Certifications
+      responses:
+        '200':
+          description: Certifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Certification'
+    
+    post:
+      summary: Create new certification
+      operationId: createCertification
+      tags:
+        - Certifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificationInput'
+      responses:
+        '201':
+          description: Certification created successfully
+
+  /certifications/{certificationId}:
+    parameters:
+      - name: certificationId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      summary: Get specific certification
+      operationId: getCertificationById
+      tags:
+        - Certifications
+      responses:
+        '200':
+          description: Certification retrieved successfully
+    
+    put:
+      summary: Update certification
+      operationId: updateCertification
+      tags:
+        - Certifications
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CertificationInput'
+      responses:
+        '200':
+          description: Certification updated successfully
+    
+    delete:
+      summary: Delete certification
+      operationId: deleteCertification
+      tags:
+        - Certifications
+      responses:
+        '204':
+          description: Certification deleted successfully
+
+  # Languages
+  /languages:
+    get:
+      summary: Get all languages
+      operationId: getLanguages
+      tags:
+        - Languages
+      responses:
+        '200':
+          description: Languages retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Language'
+    
+    post:
+      summary: Create new language
+      operationId: createLanguage
+      tags:
+        - Languages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LanguageInput'
+      responses:
+        '201':
+          description: Language created successfully
+
+  /languages/{languageId}:
+    parameters:
+      - name: languageId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      summary: Get specific language
+      operationId: getLanguageById
+      tags:
+        - Languages
+      responses:
+        '200':
+          description: Language retrieved successfully
+    
+    put:
+      summary: Update language
+      operationId: updateLanguage
+      tags:
+        - Languages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LanguageInput'
+      responses:
+        '200':
+          description: Language updated successfully
+    
+    delete:
+      summary: Delete language
+      operationId: deleteLanguage
+      tags:
+        - Languages
+      responses:
+        '204':
+          description: Language deleted successfully
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Ocp-Apim-Subscription-Key
+      description: API key for Azure API Management
+
+  schemas:
+    # Base Response Schemas
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-09-17T10:30:00Z"
+      required:
+        - success
+        - timestamp
+
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            errors:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "An error occurred"
+
+    ValidationErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+        - type: object
+          properties:
+            errors:
+              type: object
+              properties:
+                missingFields:
+                  type: array
+                  items:
+                    type: string
+                  example: ["name", "email"]
+                message:
+                  type: string
+                  example: "Missing required fields: name, email"
+
+    # Common Schemas
+    Location:
+      type: object
+      properties:
+        city:
+          type: string
+          example: "Helsinki"
+        country:
+          type: string
+          example: "Finland"
+      required:
+        - city
+        - country
+
+    Links:
+      type: object
+      properties:
+        github:
+          type: string
+          format: uri
+          example: "https://github.com/username/project"
+        demo:
+          type: string
+          format: uri
+          example: "https://demo.example.com"
+        documentation:
+          type: string
+          format: uri
+          example: "https://docs.example.com"
+
+    # Entity Schemas
+    GeneralInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "general-info"
+        firstName:
+          type: string
+          example: "Konsta"
+        lastName:
+          type: string
+          example: "Korhonen"
+        title:
+          type: string
+          example: "Integration Specialist"
+        email:
+          type: string
+          format: email
+          example: "konsta@example.com"
+        phone:
+          type: string
+          example: "+358 50 123 4567"
+        location:
+          $ref: '#/components/schemas/Location'
+        summary:
+          type: string
+          example: "Experienced integration specialist with expertise in Azure and API development"
+        linkedIn:
+          type: string
+          format: uri
+          example: "https://linkedin.com/in/konsta"
+        github:
+          type: string
+          format: uri
+          example: "https://github.com/konsta"
+        website:
+          type: string
+          format: uri
+          example: "https://konsta.dev"
+        profileImage:
+          type: string
+          format: uri
+          example: "https://example.com/profile.jpg"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - firstName
+        - lastName
+        - email
+
+    GeneralInfoInput:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 50
+        title:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          maxLength: 20
+        location:
+          $ref: '#/components/schemas/Location'
+        summary:
+          type: string
+          maxLength: 1000
+        linkedIn:
+          type: string
+          format: uri
+        github:
+          type: string
+          format: uri
+        website:
+          type: string
+          format: uri
+        profileImage:
+          type: string
+          format: uri
+      required:
+        - firstName
+        - lastName
+        - email
+
+    Skill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Azure Functions"
+        category:
+          type: string
+          example: "Cloud Platforms"
+        proficiencyLevel:
+          type: integer
+          minimum: 1
+          maximum: 5
+          example: 4
+        yearsOfExperience:
+          type: number
+          minimum: 0
+          example: 3.5
+        isHighlighted:
+          type: boolean
+          example: true
+        description:
+          type: string
+          example: "Extensive experience building serverless applications"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - category
+        - proficiencyLevel
+
+    SkillInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          type: string
+          minLength: 1
+          maxLength: 50
+        proficiencyLevel:
+          type: integer
+          minimum: 1
+          maximum: 5
+        yearsOfExperience:
+          type: number
+          minimum: 0
+        isHighlighted:
+          type: boolean
+          default: false
+        description:
+          type: string
+          maxLength: 500
+      required:
+        - name
+        - category
+        - proficiencyLevel
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Personal CV API"
+        description:
+          type: string
+          example: "REST API for managing CV data with Azure Functions"
+        longDescription:
+          type: string
+          example: "Comprehensive API built with Azure Functions and Cosmos DB..."
+        technologies:
+          type: array
+          items:
+            type: string
+          example: ["Azure Functions", "Cosmos DB", "Node.js"]
+        startDate:
+          type: string
+          format: date
+          example: "2025-09-01"
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          example: "2025-09-30"
+        status:
+          type: string
+          enum: [completed, ongoing, maintenance]
+          example: "ongoing"
+        role:
+          type: string
+          example: "Full-stack Developer"
+        teamSize:
+          type: integer
+          minimum: 1
+          example: 1
+        achievements:
+          type: array
+          items:
+            type: string
+          example: ["Implemented full CRUD operations", "Integrated with Azure APIM"]
+        links:
+          $ref: '#/components/schemas/Links'
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        isHighlighted:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - description
+        - startDate
+        - status
+
+    ProjectInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          minLength: 1
+          maxLength: 200
+        longDescription:
+          type: string
+          maxLength: 2000
+        technologies:
+          type: array
+          items:
+            type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+          enum: [completed, ongoing, maintenance]
+        role:
+          type: string
+          maxLength: 100
+        teamSize:
+          type: integer
+          minimum: 1
+        achievements:
+          type: array
+          items:
+            type: string
+        links:
+          $ref: '#/components/schemas/Links'
+        images:
+          type: array
+          items:
+            type: string
+            format: uri
+        isHighlighted:
+          type: boolean
+          default: false
+      required:
+        - name
+        - description
+        - startDate
+        - status
+
+    Experience:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        company:
+          type: string
+          example: "Tech Company Oy"
+        position:
+          type: string
+          example: "Senior Integration Specialist"
+        location:
+          $ref: '#/components/schemas/Location'
+        startDate:
+          type: string
+          format: date
+          example: "2022-01-15"
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          example: null
+        isCurrentPosition:
+          type: boolean
+          example: true
+        employmentType:
+          type: string
+          enum: [full-time, part-time, contract, freelance]
+          example: "full-time"
+        description:
+          type: string
+          example: "Leading integration projects and API development"
+        responsibilities:
+          type: array
+          items:
+            type: string
+          example: ["Design and implement APIs", "Lead technical discussions"]
+        achievements:
+          type: array
+          items:
+            type: string
+          example: ["Reduced integration time by 40%", "Led team of 5 developers"]
+        technologies:
+          type: array
+          items:
+            type: string
+          example: ["Azure", "Node.js", "Docker"]
+        companyWebsite:
+          type: string
+          format: uri
+          example: "https://techcompany.fi"
+        companyLogo:
+          type: string
+          format: uri
+          example: "https://techcompany.fi/logo.png"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - company
+        - position
+        - startDate
+        - employmentType
+
+    ExperienceInput:
+      type: object
+      properties:
+        company:
+          type: string
+          minLength: 1
+          maxLength: 100
+        position:
+          type: string
+          minLength: 1
+          maxLength: 100
+        location:
+          $ref: '#/components/schemas/Location'
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        isCurrentPosition:
+          type: boolean
+          default: false
+        employmentType:
+          type: string
+          enum: [full-time, part-time, contract, freelance]
+        description:
+          type: string
+          maxLength: 1000
+        responsibilities:
+          type: array
+          items:
+            type: string
+        achievements:
+          type: array
+          items:
+            type: string
+        technologies:
+          type: array
+          items:
+            type: string
+        companyWebsite:
+          type: string
+          format: uri
+        companyLogo:
+          type: string
+          format: uri
+      required:
+        - company
+        - position
+        - startDate
+        - employmentType
+
+    Education:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        institution:
+          type: string
+          example: "University of Helsinki"
+        degree:
+          type: string
+          example: "Master of Science"
+        fieldOfStudy:
+          type: string
+          example: "Computer Science"
+        startDate:
+          type: string
+          format: date
+          example: "2018-09-01"
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          example: "2020-12-15"
+        isOngoing:
+          type: boolean
+          example: false
+        grade:
+          type: string
+          example: "4.2/5.0"
+        location:
+          $ref: '#/components/schemas/Location'
+        description:
+          type: string
+          example: "Specialized in distributed systems and cloud computing"
+        relevantCoursework:
+          type: array
+          items:
+            type: string
+          example: ["Distributed Systems", "Cloud Computing", "API Design"]
+        achievements:
+          type: array
+          items:
+            type: string
+          example: ["Dean's List", "Thesis Award"]
+        thesis:
+          type: object
+          properties:
+            title:
+              type: string
+            description:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - institution
+        - degree
+        - fieldOfStudy
+        - startDate
+
+    EducationInput:
+      type: object
+      properties:
+        institution:
+          type: string
+          minLength: 1
+          maxLength: 100
+        degree:
+          type: string
+          minLength: 1
+          maxLength: 100
+        fieldOfStudy:
+          type: string
+          minLength: 1
+          maxLength: 100
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        isOngoing:
+          type: boolean
+          default: false
+        grade:
+          type: string
+          maxLength: 20
+        location:
+          $ref: '#/components/schemas/Location'
+        description:
+          type: string
+          maxLength: 1000
+        relevantCoursework:
+          type: array
+          items:
+            type: string
+        achievements:
+          type: array
+          items:
+            type: string
+        thesis:
+          type: object
+          properties:
+            title:
+              type: string
+              maxLength: 200
+            description:
+              type: string
+              maxLength: 1000
+      required:
+        - institution
+        - degree
+        - fieldOfStudy
+        - startDate
+
+    Certification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "Azure Solutions Architect Expert"
+        issuer:
+          type: string
+          example: "Microsoft"
+        issueDate:
+          type: string
+          format: date
+          example: "2024-06-15"
+        expirationDate:
+          type: string
+          format: date
+          nullable: true
+          example: "2026-06-15"
+        credentialId:
+          type: string
+          example: "ABC123456"
+        credentialUrl:
+          type: string
+          format: uri
+          example: "https://learn.microsoft.com/en-us/users/konsta/credentials/abc123456"
+        description:
+          type: string
+          example: "Advanced certification for designing Azure solutions"
+        skills:
+          type: array
+          items:
+            type: string
+          example: ["Azure", "Cloud Architecture", "Solution Design"]
+        logo:
+          type: string
+          format: uri
+          example: "https://example.com/azure-cert-logo.png"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - issuer
+        - issueDate
+
+    CertificationInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        issuer:
+          type: string
+          minLength: 1
+          maxLength: 100
+        issueDate:
+          type: string
+          format: date
+        expirationDate:
+          type: string
+          format: date
+          nullable: true
+        credentialId:
+          type: string
+          maxLength: 100
+        credentialUrl:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 500
+        skills:
+          type: array
+          items:
+            type: string
+        logo:
+          type: string
+          format: uri
+      required:
+        - name
+        - issuer
+        - issueDate
+
+    Language:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: "English"
+        nativeName:
+          type: string
+          example: "English"
+        proficiency:
+          type: string
+          enum: [native, fluent, intermediate, beginner]
+          example: "fluent"
+        certifications:
+          type: array
+          items:
+            type: string
+          example: ["TOEFL iBT 110"]
+        description:
+          type: string
+          example: "Business proficiency with technical writing skills"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - proficiency
+
+    LanguageInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        nativeName:
+          type: string
+          maxLength: 50
+        proficiency:
+          type: string
+          enum: [native, fluent, intermediate, beginner]
+        certifications:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+          maxLength: 300
+      required:
+        - name
+        - proficiency
+
+    CompleteCV:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        timestamp:
+          type: string
+          format: date-time
+        data:
+          type: object
+          properties:
+            generalInfo:
+              $ref: '#/components/schemas/GeneralInfo'
+            skills:
+              type: array
+              items:
+                $ref: '#/components/schemas/Skill'
+            projects:
+              type: array
+              items:
+                $ref: '#/components/schemas/Project'
+            experience:
+              type: array
+              items:
+                $ref: '#/components/schemas/Experience'
+            education:
+              type: array
+              items:
+                $ref: '#/components/schemas/Education'
+            certifications:
+              type: array
+              items:
+                $ref: '#/components/schemas/Certification'
+            languages:
+              type: array
+              items:
+                $ref: '#/components/schemas/Language'
+            metadata:
+              type: object
+              properties:
+                lastUpdated:
+                  type: string
+                  format: date-time
+                version:
+                  type: string
+                  example: "1.0.0"
+                totalExperience:
+                  type: number
+                  example: 5.5
+                skillCategories:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Cloud Platforms", "Programming Languages", "Tools"]
+      required:
+        - success
+        - timestamp
+        - data
+
+tags:
+  - name: CV
+    description: Complete CV operations
+  - name: General Info
+    description: Personal and contact information
+  - name: Skills
+    description: Technical and soft skills
+  - name: Projects
+    description: Personal and professional projects
+  - name: Experience
+    description: Work experience and employment history
+  - name: Education
+    description: Educational background
+  - name: Certifications
+    description: Professional certifications and licenses
+  - name: Languages
+    description: Language proficiencies
