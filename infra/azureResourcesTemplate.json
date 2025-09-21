@@ -289,9 +289,9 @@
     {
       "type": "Microsoft.ApiManagement/service/apis/operations",
       "apiVersion": "2021-08-01",
-      "name": "[concat(parameters('apimServiceName'), '/cv-v1/delete-skill')]",
+      "name": "[concat(parameters('apimServiceName'), '/cv/delete-skill')]",
       "dependsOn": [
-        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv-v1')]"
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
       ],
       "properties": {
         "displayName": "Delete Skill",
