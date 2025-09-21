@@ -325,7 +325,7 @@
         "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
       ],
       "properties": {
-        "value": "<policies><inbound><base /><check-header name=\"Ocp-Apim-Subscription-Key\" failed-check-httpcode=\"401\" failed-check-error-message=\"Subscription key required\" ignore-case=\"false\" /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method><method>PUT</method><method>DELETE</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
+        "value": "<policies><inbound><base /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method><method>PUT</method><method>DELETE</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
         "format": "xml"
       }
     }

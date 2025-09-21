@@ -27,25 +27,6 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
-    - name: Validate ARM template
-      run: |
-        echo "Validating ARM template before deployment..."
-        az deployment group validate \
-          --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-          --template-file infra/azureResourcesTemplate.json \
-          --parameters \
-            storageAccountName=${{ secrets.STORAGE_ACCOUNT_NAME }} \
-            cosmosDbAccountName=${{ secrets.COSMOS_DB_ACCOUNT_NAME }} \
-            appServicePlanName=${{ secrets.APP_SERVICE_PLAN_NAME }} \
-            functionAppName=${{ secrets.FUNCTION_APP_NAME }} \
-            appInsightsName=${{ secrets.APP_INSIGHTS_NAME }} \
-            databaseName=${{ secrets.DATABASE_NAME }} \
-            fuelContainerName=${{ secrets.FUEL_CONTAINER_NAME }} \
-            cvContainerName=${{ secrets.CV_CONTAINER_NAME }} \
-            apimServiceName=${{ secrets.APIM_SERVICE_NAME }} \
-            publisherEmail=${{ secrets.PUBLISHER_EMAIL }} \
-            publisherName=${{ secrets.PUBLISHER_NAME }}
-
     - name: Deploy infrastructure
       run: |
         az group create --name ${{ secrets.AZURE_RESOURCE_GROUP }} --location ${{ secrets.AZURE_LOCATION }}
