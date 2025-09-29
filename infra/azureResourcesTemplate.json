@@ -309,6 +309,100 @@
       }
     },
     {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-experience')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get All Experience",
+        "method": "GET",
+        "urlTemplate": "/experience",
+        "description": "Retrieve all work experience entries"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-experience-by-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get Experience by ID",
+        "method": "GET",
+        "urlTemplate": "/experience/{experienceId}",
+        "description": "Retrieve a specific work experience entry by ID",
+        "templateParameters": [
+          {
+            "name": "experienceId",
+            "description": "Experience identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/create-experience')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Create Experience",
+        "method": "POST",
+        "urlTemplate": "/experience",
+        "description": "Create a new work experience entry"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-experience')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update Experience",
+        "method": "PUT",
+        "urlTemplate": "/experience/{experienceId}",
+        "description": "Update an existing work experience entry",
+        "templateParameters": [
+          {
+            "name": "experienceId",
+            "description": "Experience identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/delete-experience')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Delete Experience",
+        "method": "DELETE",
+        "urlTemplate": "/experience/{experienceId}",
+        "description": "Delete a work experience entry",
+        "templateParameters": [
+          {
+            "name": "experienceId",
+            "description": "Experience identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
       "type": "Microsoft.ApiManagement/service/products/apis",
       "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
