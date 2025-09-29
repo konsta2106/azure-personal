@@ -174,8 +174,8 @@
       "name": "[parameters('apimServiceName')]",
       "location": "[resourceGroup().location]",
       "sku": {
-        "name": "Developer",
-        "capacity": 1
+        "name": "Consumption",
+        "capacity": 0
       },
       "properties": {
         "publisherEmail": "[parameters('publisherEmail')]",
