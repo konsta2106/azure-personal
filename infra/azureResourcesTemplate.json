@@ -403,6 +403,100 @@
       }
     },
     {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-projects')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get All Projects",
+        "method": "GET",
+        "urlTemplate": "/projects",
+        "description": "Retrieve all projects"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-project-by-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get Project by ID",
+        "method": "GET",
+        "urlTemplate": "/projects/{projectId}",
+        "description": "Retrieve a specific project by ID",
+        "templateParameters": [
+          {
+            "name": "projectId",
+            "description": "Project identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/create-project')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Create Project",
+        "method": "POST",
+        "urlTemplate": "/projects",
+        "description": "Create a new project"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-project')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update Project",
+        "method": "PUT",
+        "urlTemplate": "/projects/{projectId}",
+        "description": "Update an existing project",
+        "templateParameters": [
+          {
+            "name": "projectId",
+            "description": "Project identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/delete-project')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Delete Project",
+        "method": "DELETE",
+        "urlTemplate": "/projects/{projectId}",
+        "description": "Delete a project",
+        "templateParameters": [
+          {
+            "name": "projectId",
+            "description": "Project identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
       "type": "Microsoft.ApiManagement/service/products/apis",
       "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
