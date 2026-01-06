@@ -217,6 +217,34 @@
     {
       "type": "Microsoft.ApiManagement/service/apis/operations",
       "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-general-info')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get General Information",
+        "method": "GET",
+        "urlTemplate": "/general-info",
+        "description": "Retrieve general/personal information"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-general-info')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update General Information",
+        "method": "PUT",
+        "urlTemplate": "/general-info",
+        "description": "Create or update general/personal information"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/get-skills')]",
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
