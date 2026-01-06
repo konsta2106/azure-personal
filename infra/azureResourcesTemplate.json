@@ -685,6 +685,100 @@
       }
     },
     {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-languages')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get All Languages",
+        "method": "GET",
+        "urlTemplate": "/languages",
+        "description": "Retrieve all language entries"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-language-by-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get Language by ID",
+        "method": "GET",
+        "urlTemplate": "/languages/{languageId}",
+        "description": "Retrieve a specific language entry by ID",
+        "templateParameters": [
+          {
+            "name": "languageId",
+            "description": "Language identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/create-language')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Create Language",
+        "method": "POST",
+        "urlTemplate": "/languages",
+        "description": "Create a new language entry"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-language')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update Language",
+        "method": "PUT",
+        "urlTemplate": "/languages/{languageId}",
+        "description": "Update an existing language entry",
+        "templateParameters": [
+          {
+            "name": "languageId",
+            "description": "Language identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/delete-language')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Delete Language",
+        "method": "DELETE",
+        "urlTemplate": "/languages/{languageId}",
+        "description": "Delete a language entry",
+        "templateParameters": [
+          {
+            "name": "languageId",
+            "description": "Language identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
       "type": "Microsoft.ApiManagement/service/products/apis",
       "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
