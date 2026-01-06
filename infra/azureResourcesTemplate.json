@@ -591,6 +591,100 @@
       }
     },
     {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-certifications')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get All Certifications",
+        "method": "GET",
+        "urlTemplate": "/certifications",
+        "description": "Retrieve all certification entries"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-certification-by-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get Certification by ID",
+        "method": "GET",
+        "urlTemplate": "/certifications/{certificationId}",
+        "description": "Retrieve a specific certification entry by ID",
+        "templateParameters": [
+          {
+            "name": "certificationId",
+            "description": "Certification identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/create-certification')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Create Certification",
+        "method": "POST",
+        "urlTemplate": "/certifications",
+        "description": "Create a new certification entry"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-certification')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update Certification",
+        "method": "PUT",
+        "urlTemplate": "/certifications/{certificationId}",
+        "description": "Update an existing certification entry",
+        "templateParameters": [
+          {
+            "name": "certificationId",
+            "description": "Certification identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/delete-certification')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Delete Certification",
+        "method": "DELETE",
+        "urlTemplate": "/certifications/{certificationId}",
+        "description": "Delete a certification entry",
+        "templateParameters": [
+          {
+            "name": "certificationId",
+            "description": "Certification identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
       "type": "Microsoft.ApiManagement/service/products/apis",
       "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
