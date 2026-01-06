@@ -497,6 +497,100 @@
       }
     },
     {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-education')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get All Education",
+        "method": "GET",
+        "urlTemplate": "/education",
+        "description": "Retrieve all education entries"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/get-education-by-id')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Get Education by ID",
+        "method": "GET",
+        "urlTemplate": "/education/{educationId}",
+        "description": "Retrieve a specific education entry by ID",
+        "templateParameters": [
+          {
+            "name": "educationId",
+            "description": "Education identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/create-education')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Create Education",
+        "method": "POST",
+        "urlTemplate": "/education",
+        "description": "Create a new education entry"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/update-education')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Update Education",
+        "method": "PUT",
+        "urlTemplate": "/education/{educationId}",
+        "description": "Update an existing education entry",
+        "templateParameters": [
+          {
+            "name": "educationId",
+            "description": "Education identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv/delete-education')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ],
+      "properties": {
+        "displayName": "Delete Education",
+        "method": "DELETE",
+        "urlTemplate": "/education/{educationId}",
+        "description": "Delete an education entry",
+        "templateParameters": [
+          {
+            "name": "educationId",
+            "description": "Education identifier",
+            "type": "string",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
       "type": "Microsoft.ApiManagement/service/products/apis",
       "apiVersion": "2021-08-01",
       "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
