@@ -21,3 +21,7 @@ __azurite*
 *node_modules/
 __**
 *.http
+
+# OpenCode
+AGENTS.md
+PROJECT_REFERENCE.md
