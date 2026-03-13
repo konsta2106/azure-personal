@@ -60,13 +60,6 @@ app.http('httpTriggerProjectsPut', {
         }
       }
 
-      // Validate team size
-      if (body.teamSize && body.teamSize < 1) {
-        return createApiResponse(400, null, 'Validation failed', {
-          message: 'Team size must be at least 1'
-        });
-      }
-
       // Initialize Cosmos DB service
       const cosmosService = new CosmosDbService();
       await cosmosService.init();
@@ -89,7 +82,7 @@ app.http('httpTriggerProjectsPut', {
         endDate: body.endDate || null,
         status: body.status,
         role: body.role ? body.role.trim() : '',
-        teamSize: body.teamSize || 1,
+        teamSize: body.teamSize || null,
         achievements: body.achievements || [],
         links: body.links || {},
         images: body.images || [],

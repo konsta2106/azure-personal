@@ -1002,8 +1002,7 @@ components:
           example: "Full-stack Developer"
         teamSize:
           type: integer
-          minimum: 1
-          example: 1
+          example: 3
         achievements:
           type: array
           items:
@@ -1064,7 +1063,6 @@ components:
           maxLength: 100
         teamSize:
           type: integer
-          minimum: 1
         achievements:
           type: array
           items:
