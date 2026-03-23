@@ -185,13 +185,28 @@
     {
       "type": "Microsoft.ApiManagement/service/products",
       "apiVersion": "2021-08-01",
-      "name": "[concat(parameters('apimServiceName'), '/cv')]",
+      "name": "[concat(parameters('apimServiceName'), '/cv-management')]",
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('apimServiceName'))]"
       ],
       "properties": {
-        "displayName": "CV API",
-        "description": "Complete CV management API with versioning support",
+        "displayName": "CV Management API",
+        "description": "Full CRUD CV management API for internal tooling, MCP servers, and admin operations. Includes all entities including projects.",
+        "subscriptionRequired": true,
+        "approvalRequired": true,
+        "state": "published"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/products",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv-website')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apimServiceName'))]"
+      ],
+      "properties": {
+        "displayName": "CV Website API",
+        "description": "Read-only public CV endpoint for the personal webpage. Returns the complete CV without projects.",
         "subscriptionRequired": true,
         "approvalRequired": true,
         "state": "published"
@@ -206,12 +221,43 @@
         "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
       ],
       "properties": {
-        "displayName": "CV API v1",
-        "description": "CV management API with full CRUD operations for all CV entities",
+        "displayName": "CV Management API v1",
+        "description": "Full CRUD CV management API for all entities including projects. Used by MCP servers and internal tooling.",
         "serviceUrl": "[concat('https://', parameters('functionAppName'), '.azurewebsites.net/api')]",
         "path": "cv/v1",
         "protocols": ["https"],
         "subscriptionRequired": true
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv-website')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apimServiceName'))]",
+        "[resourceId('Microsoft.Web/sites', parameters('functionAppName'))]"
+      ],
+      "properties": {
+        "displayName": "CV Website API v1",
+        "description": "Read-only public CV endpoint for the personal webpage. Returns the complete CV without projects.",
+        "serviceUrl": "[concat('https://', parameters('functionAppName'), '.azurewebsites.net/api')]",
+        "path": "cv-website/v1",
+        "protocols": ["https"],
+        "subscriptionRequired": true
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv-website/get-public-cv')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv-website')]"
+      ],
+      "properties": {
+        "displayName": "Get Public CV",
+        "method": "GET",
+        "urlTemplate": "/cv-public",
+        "description": "Retrieve the complete CV without projects, intended for the public webpage"
       }
     },
     {
@@ -823,10 +869,19 @@
     {
       "type": "Microsoft.ApiManagement/service/products/apis",
       "apiVersion": "2021-08-01",
-      "name": "[concat(parameters('apimServiceName'), '/cv/cv')]",
+      "name": "[concat(parameters('apimServiceName'), '/cv-management/cv')]",
       "dependsOn": [
-        "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimServiceName'), 'cv')]",
+        "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimServiceName'), 'cv-management')]",
         "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv')]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/products/apis",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv-website/cv-website')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/products', parameters('apimServiceName'), 'cv-website')]",
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv-website')]"
       ]
     },
     {
@@ -853,6 +908,19 @@
       ],
       "properties": {
         "value": "<policies><inbound><base /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method><method>PUT</method><method>DELETE</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors><set-header name=\"x-functions-key\" exists-action=\"override\"><value>{{function-key}}</value></set-header></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
+        "format": "xml"
+      }
+    },
+    {
+      "type": "Microsoft.ApiManagement/service/apis/policies",
+      "apiVersion": "2021-08-01",
+      "name": "[concat(parameters('apimServiceName'), '/cv-website/policy')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('apimServiceName'), 'cv-website')]",
+        "[resourceId('Microsoft.ApiManagement/service/namedValues', parameters('apimServiceName'), 'function-key')]"
+      ],
+      "properties": {
+        "value": "<policies><inbound><base /><cors allow-credentials=\"false\"><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>OPTIONS</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors><set-header name=\"x-functions-key\" exists-action=\"override\"><value>{{function-key}}</value></set-header></inbound><backend><base /></backend><outbound><base /></outbound><on-error><base /></on-error></policies>",
         "format": "xml"
       }
     }

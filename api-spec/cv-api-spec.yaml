@@ -4,9 +4,15 @@ info:
   description: |
     A comprehensive REST API for managing personal CV data including general information, 
     skills, projects, work experience, education, certifications, and languages.
-    
-    This API is designed for integration specialists and supports full CRUD operations
-    on all CV entities with a dedicated endpoint for retrieving the complete CV.
+
+    ## Products
+
+    This API is exposed via two APIM products:
+
+    - **CV Management API** (`cv/v1`) — Full CRUD for all CV entities including projects.
+      Intended for MCP servers, internal tooling, and admin operations.
+    - **CV Website API** (`cv-website/v1`) — Read-only aggregate endpoint that returns the
+      complete CV without projects. Intended for the public personal webpage.
   version: 1.0.0
   contact:
     name: Konsta
@@ -17,17 +23,21 @@ info:
 
 servers:
   - url: https://your-apim-instance.azure-api.net/cv
-    description: Production server (via Azure API Management)
+    description: CV Management API (full CRUD, includes projects)
+  - url: https://your-apim-instance.azure-api.net/cv-website
+    description: CV Website API (read-only, no projects)
 
 security:
   - ApiKeyAuth: []
 
 paths:
-  # Complete CV Endpoint
+  # Complete CV Endpoint (Management API - includes projects)
   /cv:
     get:
       summary: Get complete CV
-      description: Retrieves the complete CV with all sections aggregated and formatted
+      description: |
+        Retrieves the complete CV with all sections aggregated and formatted,
+        including projects. Available via the CV Management API product.
       operationId: getCompleteCV
       tags:
         - CV
@@ -38,6 +48,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompleteCV'
+        '404':
+          description: CV data not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Public CV Endpoint (Website API - no projects)
+  /cv-public:
+    get:
+      summary: Get public CV (no projects)
+      description: |
+        Retrieves the complete CV without the projects section, intended for the
+        public personal webpage. Available via the CV Website API product.
+      operationId: getPublicCV
+      tags:
+        - CV Website
+      responses:
+        '200':
+          description: Public CV retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompleteCVPublic'
         '404':
           description: CV data not found
           content:
@@ -1532,9 +1572,68 @@ components:
         - timestamp
         - data
 
+    CompleteCVPublic:
+      type: object
+      description: Complete CV without the projects section, intended for the public webpage.
+      properties:
+        success:
+          type: boolean
+          example: true
+        timestamp:
+          type: string
+          format: date-time
+        data:
+          type: object
+          properties:
+            generalInfo:
+              $ref: '#/components/schemas/GeneralInfo'
+            skills:
+              type: array
+              items:
+                $ref: '#/components/schemas/Skill'
+            experience:
+              type: array
+              items:
+                $ref: '#/components/schemas/Experience'
+            education:
+              type: array
+              items:
+                $ref: '#/components/schemas/Education'
+            certifications:
+              type: array
+              items:
+                $ref: '#/components/schemas/Certification'
+            languages:
+              type: array
+              items:
+                $ref: '#/components/schemas/Language'
+            metadata:
+              type: object
+              properties:
+                lastUpdated:
+                  type: string
+                  format: date-time
+                version:
+                  type: string
+                  example: "1.0.0"
+                totalExperience:
+                  type: number
+                  example: 5.5
+                skillCategories:
+                  type: array
+                  items:
+                    type: string
+                  example: ["Cloud Platforms", "Programming Languages", "Tools"]
+      required:
+        - success
+        - timestamp
+        - data
+
 tags:
   - name: CV
-    description: Complete CV operations
+    description: Complete CV operations (Management API - includes projects)
+  - name: CV Website
+    description: Public CV endpoint for the personal webpage (no projects)
   - name: General Info
     description: Personal and contact information
   - name: Skills
