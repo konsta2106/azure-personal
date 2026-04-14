@@ -172,11 +172,12 @@ function getEntityDisplayName(entityType) {
 
 // Sort functions for different entity types
 function sortSkillsByCategory(skills) {
+  const proficiencyOrder = { advanced: 0, proficient: 1, working_knowledge: 2, basic_familiarity: 3 };
   return skills.sort((a, b) => {
     if (a.data.category !== b.data.category) {
       return a.data.category.localeCompare(b.data.category);
     }
-    return b.data.proficiencyLevel - a.data.proficiencyLevel;
+    return proficiencyOrder[a.data.proficiencyLevel] - proficiencyOrder[b.data.proficiencyLevel];
   });
 }
 

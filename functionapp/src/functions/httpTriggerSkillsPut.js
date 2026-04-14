@@ -31,10 +31,11 @@ app.http('httpTriggerSkillsPut', {
         return createValidationErrorResponse(missingFields);
       }
 
-      // Validate proficiencyLevel range
-      if (body.proficiencyLevel < 1 || body.proficiencyLevel > 5) {
+      // Validate proficiencyLevel
+      const validProficiencyLevels = ['advanced', 'proficient', 'working_knowledge', 'basic_familiarity'];
+      if (!validProficiencyLevels.includes(body.proficiencyLevel)) {
         return createApiResponse(400, null, 'Validation failed', {
-          message: 'Proficiency level must be between 1 and 5'
+          message: `Proficiency level must be one of: ${validProficiencyLevels.join(', ')}`
         });
       }
 
