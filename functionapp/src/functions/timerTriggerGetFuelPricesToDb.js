@@ -21,26 +21,23 @@ app.timer('timerTriggerGetFuelPricesToDb', {
             // Loading HTML into cheerio for scraping
             const $ = cheerio.load(data);
             
-            // Array to hold fuel prices and stations
-            const fuel95Stations = [];
-            
-            // Extracting the "Keskiarvo" (average price)
-            const keskiarvo = $('.tab-pane#fuel-95 h6').text().replace('Keskiarvo', '').trim();
-            
-            // Scraping the stations table
+            // Scraping the 10 cheapest stations from the fuel-95 tab
+            const prices = [];
             $('#fuel-95 table tbody tr').each((i, element) => {
-                const station = {
-                    number: $(element).find('td.text-center').text().trim(),
-                    station: $(element).find('td:nth-child(2)').text().trim(),
-                    price: $(element).find('td:nth-child(3)').text().trim(),
-                    updated: $(element).find('td:nth-child(4)').text().trim()
-                };
-                fuel95Stations.push(station);
+                const priceText = $(element).find('td:nth-child(3)').text().trim();
+                const price = parseFloat(priceText);
+                if (!isNaN(price)) {
+                    prices.push(price);
+                }
             });
-            
-            // Logging the scraped data (you can also insert this into a database)
-            // context.log('Stations: ', fuel95Stations);
-            // context.log('Keskiarvo (average price): ', keskiarvo);
+
+            // Calculate keskiarvo (average) from the 10 cheapest stations
+            if (prices.length === 0) {
+                throw new Error('No fuel-95 prices found on the page');
+            }
+            const sum = prices.reduce((acc, p) => acc + p, 0);
+            const keskiarvo = (sum / prices.length).toFixed(3);
+            context.log(`Calculated keskiarvo from ${prices.length} stations: ${keskiarvo}`);
 
             let dataToReturn = {
                 id: Date.now().toString(),
