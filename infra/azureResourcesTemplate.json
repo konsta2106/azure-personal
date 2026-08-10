@@ -16,6 +16,22 @@
       }
     },
     {
+      "type": "Microsoft.Storage/storageAccounts/tableServices",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('storageAccountName'), '/default')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/tableServices/tables",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('storageAccountName'), '/default/', parameters('processedArticlesTableName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/tableServices', parameters('storageAccountName'), 'default')]"
+      ]
+    },
+    {
       "type": "Microsoft.DocumentDB/databaseAccounts",
       "apiVersion": "2021-04-15",
       "name": "[parameters('cosmosDbAccountName')]",
@@ -151,6 +167,10 @@
             {
               "name": "CV_CONTAINER_NAME", 
               "value": "[parameters('cvContainerName')]"
+            },
+            {
+              "name": "PROCESSED_ARTICLES_TABLE_NAME",
+              "value": "[parameters('processedArticlesTableName')]"
             }
           ]
         }
@@ -950,6 +970,10 @@
     "cvContainerName": {
       "type": "string",
       "defaultValue": "cv-data"
+    },
+    "processedArticlesTableName": {
+      "type": "string",
+      "defaultValue": "ProcessedArticles"
     },
     "apimServiceName": {
       "type": "string"
