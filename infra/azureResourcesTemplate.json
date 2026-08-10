@@ -52,6 +52,15 @@
       "properties": {}
     },
     {
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "2021-11-01",
+      "name": "[concat(parameters('serviceBusNamespaceName'), '/', parameters('serviceBusNotRelevantQueueName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+      ],
+      "properties": {}
+    },
+    {
       "type": "Microsoft.DocumentDB/databaseAccounts",
       "apiVersion": "2021-04-15",
       "name": "[parameters('cosmosDbAccountName')]",
@@ -1002,6 +1011,10 @@
       "type": "string",
       "defaultValue": "article-metadata"
     },
+    "serviceBusNotRelevantQueueName": {
+      "type": "string",
+      "defaultValue": "not-relevant-articles"
+    },
     "apimServiceName": {
       "type": "string"
     },
@@ -1020,6 +1033,10 @@
     "serviceBusQueueName": {
       "type": "string",
       "value": "[parameters('serviceBusQueueName')]"
+    },
+    "serviceBusNotRelevantQueueName": {
+      "type": "string",
+      "value": "[parameters('serviceBusNotRelevantQueueName')]"
     }
   }
 }
