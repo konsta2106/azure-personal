@@ -5,6 +5,39 @@ const {
   createServerErrorResponse
 } = require('../utils/api-utils');
 
+/**
+ * Attempts to extract the real destination URL from an email click-tracking URL.
+ * Many trackers (e.g. technologyadvice.com) embed the destination as a URL-safe
+ * base64 segment in the path, e.g. /click/{id}/{base64Url}/{hash}.
+ *
+ * @param {string} trackingUrl - The click-tracking URL from the email HTML.
+ * @returns {string|null} The decoded destination URL, or null if none found.
+ */
+function extractRealUrl(trackingUrl) {
+  try {
+    const { pathname } = new URL(trackingUrl);
+    const segments = pathname.split('/').filter(Boolean);
+
+    // The destination is a base64-encoded URL; when decoded it starts with http.
+    for (const segment of segments) {
+      // URL-safe base64 of "http" starts with "aHR0".
+      if (!segment.startsWith('aHR0')) {
+        continue;
+      }
+
+      const decoded = Buffer.from(segment, 'base64').toString('utf8');
+
+      if (/^https?:\/\//i.test(decoded)) {
+        return decoded;
+      }
+    }
+  } catch (error) {
+    // Not a parseable URL - fall through and return null.
+  }
+
+  return null;
+}
+
 app.http('httpTriggerExtractNewsletterTopics', {
   methods: ['POST'],
   authLevel: 'function',
@@ -44,10 +77,21 @@ app.http('httpTriggerExtractNewsletterTopics', {
 
         seenUrls.add(url);
 
-        topics.push({
-          title,
-          url
-        });
+        // Attempt to decode the real destination from the tracking URL.
+        const realUrl = extractRealUrl(url);
+
+        if (realUrl) {
+          topics.push({
+            title,
+            url: realUrl,
+            trackingUrl: url
+          });
+        } else {
+          topics.push({
+            title,
+            url
+          });
+        }
       });
 
       return createApiResponse(200, { topics }, 'Topics extracted successfully');
