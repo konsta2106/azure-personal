@@ -1,5 +1,6 @@
 const { app } = require('@azure/functions');
 const cheerio = require('cheerio');
+const crypto = require('crypto');
 const {
   createApiResponse,
   createServerErrorResponse
@@ -38,6 +39,33 @@ function extractRealUrl(trackingUrl) {
   return null;
 }
 
+/**
+ * Normalizes a URL to a canonical form so that minor variations of the same
+ * destination produce the same value (and therefore the same hash / DB key).
+ * Strips query strings, fragments, and trailing slashes.
+ *
+ * @param {string} url - The URL to canonicalize.
+ * @returns {string} The canonical URL.
+ */
+function canonicalizeUrl(url) {
+  return url
+    .trim()
+    .split('#')[0]
+    .split('?')[0]
+    .replace(/\/$/, '');
+}
+
+/**
+ * Generates a deterministic SHA-256 hash of a URL, suitable for use as a
+ * unique key in the database. The same URL always produces the same hash.
+ *
+ * @param {string} url - The URL to hash.
+ * @returns {string} A hex-encoded SHA-256 hash of the URL.
+ */
+function hashUrl(url) {
+  return crypto.createHash('sha256').update(url).digest('hex');
+}
+
 app.http('httpTriggerExtractNewsletterTopics', {
   methods: ['POST'],
   authLevel: 'function',
@@ -56,7 +84,7 @@ app.http('httpTriggerExtractNewsletterTopics', {
       const $ = cheerio.load(html);
 
       const topics = [];
-      const seenUrls = new Set();
+      const seenHashes = new Set();
 
       $('h1 a[href]').each((_, element) => {
         const title = $(element)
@@ -70,26 +98,30 @@ app.http('httpTriggerExtractNewsletterTopics', {
           return;
         }
 
-        // Remove duplicate links
-        if (seenUrls.has(url)) {
+        // Attempt to decode the real destination from the tracking URL.
+        const realUrl = extractRealUrl(url);
+        const canonicalUrl = canonicalizeUrl(realUrl || url);
+        const urlHash = hashUrl(canonicalUrl);
+
+        // Remove duplicate destinations (even across different tracking wrappers).
+        if (seenHashes.has(urlHash)) {
           return;
         }
 
-        seenUrls.add(url);
-
-        // Attempt to decode the real destination from the tracking URL.
-        const realUrl = extractRealUrl(url);
+        seenHashes.add(urlHash);
 
         if (realUrl) {
           topics.push({
             title,
-            url: realUrl,
-            trackingUrl: url
+            url: canonicalUrl,
+            trackingUrl: url,
+            urlHash
           });
         } else {
           topics.push({
             title,
-            url
+            url: canonicalUrl,
+            urlHash
           });
         }
       });
