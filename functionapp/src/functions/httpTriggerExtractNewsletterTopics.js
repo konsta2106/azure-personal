@@ -8,7 +8,6 @@ const {
 app.http('httpTriggerExtractNewsletterTopics', {
   methods: ['POST'],
   authLevel: 'function',
-  route: 'extract-newsletter-topics',
   handler: async (request, context) => {
     context.log('HTTP trigger function processed a request for POST extract-newsletter-topics');
 
