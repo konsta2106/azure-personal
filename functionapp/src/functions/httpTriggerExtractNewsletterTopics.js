@@ -8,9 +8,9 @@ const {
 app.http('httpTriggerExtractNewsletterTopics', {
   methods: ['POST'],
   authLevel: 'function',
-  route: 'newsletter/extract-topics',
+  route: 'extract-newsletter-topics',
   handler: async (request, context) => {
-    context.log('HTTP trigger function processed a request for POST newsletter/extract-topics');
+    context.log('HTTP trigger function processed a request for POST extract-newsletter-topics');
 
     try {
       // Parse request body - Azure Functions v4 way
