@@ -32,6 +32,26 @@
       ]
     },
     {
+      "type": "Microsoft.ServiceBus/namespaces",
+      "apiVersion": "2021-11-01",
+      "name": "[parameters('serviceBusNamespaceName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Basic"
+      },
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "2021-11-01",
+      "name": "[concat(parameters('serviceBusNamespaceName'), '/', parameters('serviceBusQueueName'))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('serviceBusNamespaceName'))]"
+      ],
+      "properties": {}
+    },
+    {
       "type": "Microsoft.DocumentDB/databaseAccounts",
       "apiVersion": "2021-04-15",
       "name": "[parameters('cosmosDbAccountName')]",
@@ -975,6 +995,13 @@
       "type": "string",
       "defaultValue": "ProcessedArticles"
     },
+    "serviceBusNamespaceName": {
+      "type": "string"
+    },
+    "serviceBusQueueName": {
+      "type": "string",
+      "defaultValue": "article-metadata"
+    },
     "apimServiceName": {
       "type": "string"
     },
@@ -983,6 +1010,16 @@
     },
     "publisherName": {
       "type": "string"
+    }
+  },
+  "outputs": {
+    "serviceBusConnectionString": {
+      "type": "string",
+      "value": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('serviceBusNamespaceName'), 'RootManageSharedAccessKey'), '2021-11-01').primaryConnectionString]"
+    },
+    "serviceBusQueueName": {
+      "type": "string",
+      "value": "[parameters('serviceBusQueueName')]"
     }
   }
 }

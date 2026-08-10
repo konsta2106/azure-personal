@@ -44,6 +44,7 @@ jobs:
             databaseName=${{ secrets.DATABASE_NAME }} \
             fuelContainerName=${{ secrets.FUEL_CONTAINER_NAME }} \
             cvContainerName=${{ secrets.CV_CONTAINER_NAME }} \
+            serviceBusNamespaceName=${{ secrets.SERVICE_BUS_NAMESPACE_NAME }} \
             apimServiceName=${{ secrets.APIM_SERVICE_NAME }} \
             publisherEmail=${{ secrets.PUBLISHER_EMAIL }} \
             publisherName=${{ secrets.PUBLISHER_NAME }} \
