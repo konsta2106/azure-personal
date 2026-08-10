@@ -7,7 +7,7 @@ on:
 
 env:
   FUNCTIONAPP_PACKAGE_PATH: 'functionapp'       # set this to the path to your function app project, defaults to the repository root
-  NODE_VERSION: '20.x'                      # set this to the node version to use (e.g. '8.x', '10.x', '12.x')
+  NODE_VERSION: '22.x'                      # set this to the node version to use (e.g. '8.x', '10.x', '12.x')
 
 jobs:
   deploy:
@@ -48,10 +48,6 @@ jobs:
             publisherEmail=${{ secrets.PUBLISHER_EMAIL }} \
             publisherName=${{ secrets.PUBLISHER_NAME }} \
           --verbose
-
-    - name: Install Azure Functions Core Tools
-      run: |
-        npm install -g azure-functions-core-tools@4 --unsafe-perm true
 
     - name: 'Resolve Project Dependencies Using Npm'
       shell: bash
